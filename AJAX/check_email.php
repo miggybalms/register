@@ -25,4 +25,3 @@ if (isset($_POST['email'])) {
 }
 
 ?>
- <!-- SQL query that checks if a user is existing or not (should be pasted in the check_email.php) (CODE ENDS HERE) -->
