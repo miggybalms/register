@@ -1,7 +1,4 @@
 <?php
-require_once('classes/database.php');
-require_once('classes/function.php');
- 
 class database {
     function opencon(): PDO {
         return new PDO(
