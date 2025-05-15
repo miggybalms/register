@@ -57,19 +57,6 @@ require_once('classes/functions.php');
 -->
  
  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
 <!doctype html>
 <html lang="en">
 <head>
@@ -98,7 +85,7 @@ require_once('classes/functions.php');
 </head>
 <body>
  
-<script src="package/dist/sweetalert2.js"></script>>
+<script src="package/dist/sweetalert2.js"></script>
  
 <?php
 // Output SweetAlert script if set
