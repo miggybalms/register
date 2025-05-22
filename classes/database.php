@@ -2,7 +2,7 @@
 class database {
     function opencon(): PDO {
         return new PDO(
-            'mysql:host=localhost;dbname=lms_app',
+            'mysql:host=localhost;dbname=dbs_db',
             'root',
             ''
         );
@@ -49,5 +49,30 @@ class database {
             return false;
         }
     }
+        function loginUser($username, $password) {
+ 
+        $con = $this->opencon();
+        $stmt = $con->prepare("SELECT * FROM users WHERE user_username = ?");
+        $stmt->execute([$username]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if($user && password_verify($password, $user['user_password'])){
+            return $user;
+        } else {
+            return false;
+        }
+    }
+
+        function saveAuthor($firstName, $lastName, $birthDate, $nationality) {
+            
+        $con = $this->opencon();
+         $stmt = $con->prepare("SELECT * FROM authors (author_FN, author_LN, author_birthday, author_nat) VALUES (?, ?, ?, ?)");
+         $stmt->execute([$author]);
+          $user = $stmt->fetch(PDO::FETCH_ASSOC);
+          return $user;
+                 } else {
+                    return false;
+                 }
+    
+
 }
 ?>

@@ -11,7 +11,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">Library Management System (Admin)</a>
-          <a class="btn btn-outline-light ms-auto" href="add_authors.html">Add Authors</a>
+          <a class="btn btn-outline-light ms-auto" href="add_authors.php">Add Authors</a>
           <a class="btn btn-outline-light ms-2" href="add_genres.html">Add Genres</a>
           <a class="btn btn-outline-light ms-2" href="add_books.html">Add Books</a>
           <div class="dropdown ms-2">

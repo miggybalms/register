@@ -1,8 +1,37 @@
+<?php
+require_once('classes/database.php');
+$sweetAlertConfig = "";
+$con = new database();
+
+if (isset($_POST['add'])){
+    $firstName = $_POST['author_FN'] ?? '';
+    $lastName = $_POST['author_LN'] ?? '';
+    $birthDate = $_POST['author_birthday'] ?? '';
+    $nationality = $_POST['author_nat'] ?? '';
+
+   if ($firstName && $lastName && $birthDate && $nationality) {
+        $db = new database();
+        $result = $db->saveAuthor($firstName, $lastName, $birthDate, $nationality);
+
+
+        if ($result) {
+            echo "<script>alert('Author added successfully!');</script>";
+        } else {
+            echo "<script>alert('Failed to add author.');</script>";
+        }
+    }
+}
+?>
+
+
+
+
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./package/dist/sweetalert2.css">
   <link rel="stylesheet" href="./bootstrap-5.3.3-dist/css/bootstrap.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"> <!-- Correct Bootstrap Icons CSS -->
   <title>Authors</title>
@@ -81,6 +110,8 @@
       </select>
     </div>
     <button type="submit" class="btn btn-primary">Add Author</button>
+        <script src="./package/dist/sweetalert2.js"></script>
+    <?php echo $sweetAlertConfig; ?>
   </form>
 </div>
 <script src="./bootstrap-5.3.3-dist/js/bootstrap.js"></script>
