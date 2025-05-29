@@ -1,15 +1,47 @@
 <?php
-
+ 
+session_start();
+ 
 require_once('classes/database.php');
 $con = new database();
-session_start();
-
-if(empty($id = $_POST['id'])) {
-  header('location:index.php');
-}else{
-  $id = $_POST['id'];
-  $data = $con->viewAuthorsID($id);
+ 
+$sweetAlertConfig = ""; //Initialize SweetAlert script variable
+ 
+if (isset($_POST['add'])) {
+ 
+  $authorFN = $_POST['author_FN'];
+  $authorLN = $_POST['author_LN'];
+  $authorBD = $_POST['author_birthdate'];
+  $authorNat = $_POST['author_nat'];
+  $authorID = $con->addAuthor($authorFN, $authorLN, $authorBD, $authorNat);
+ 
+ 
+  if ($authorID) {
+ 
+    $sweetAlertConfig = "
+    <script>
+   
+    Swal.fire({
+        icon: 'success',
+        title: 'Author added successfully!',
+        text: 'The author has been successfully added to the system.',
+        confirmationButtontext: 'OK'
+     }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'login.php'
+        }
+            });
+ 
+    </script>";
+ 
+  } else {
+ 
+    $_SESSION['error'] = "Sorry, there was an error signing up.";
+   
+  }
+ 
 }
+ 
 ?>
 
 <!doctype html>

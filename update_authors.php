@@ -2,14 +2,47 @@
 require_once('classes/database.php');
 $con = new database();
 session_start();
- 
+$sweetAlertConfig = "";
+
+
+  if (isset($_POST['updateAuthor'])) {
+    $authorid = $_POST['id'];
+  $firstname = $_POST['author_FN'];
+  $lastname = $_POST['author_LN'];
+  $birthday = $_POST['author_birthday'];
+  $nationalty = $_POST['author_nat'];
+  
+  $author_id = $con->insertAuthor($firstname, $lastname, $birthday, $nationalty, $authorid);
+
+  if ($author_id) {
+    $sweetAlertConfig = " 
+    <script>
+    Swal.fire({
+    icon: 'success',
+    title: 'Added Successful',
+    text: 'Author has been added successfully',
+    confirmButtonText: 'Ok'
+    }).then((result) => {
+    if (result.isConfirmed) {
+    window.location.href = 'add_authors.php';
+    }
+    });
+    </script>";
+  } else {
+    $_SESSION ['error'] = "Error occurred while inserting address. Please try again.";
+  }
+}else {   $_SESSION ['error'] = "sorry, there was an error signing up";
+}
+
 if (empty($id = $_POST['id'])){
-    header('location:index.php');
+    header('location:admin_homepage.php');
  
 }else{
     $id = $_POST['id'];
-    $data = $con->viewAuthorsID($id);
+    $data = $con->viewAuthorID($id);
 }
+
+
 ?>
  
 <!doctype html>
@@ -64,6 +97,7 @@ if (empty($id = $_POST['id'])){
  
   <h4 class="mt-5">Update Existing Author</h4>
   <form method="post" action="" novalidate>
+
     <div class="mb-3">
       <label for="authorFirstName" class="form-label">First Name</label>
       <input type="text" value="<?php echo ($data['author_FN'])?>" name="author_FN" class="form-control" id="authorFirstName" required>
@@ -96,13 +130,13 @@ if (empty($id = $_POST['id'])){
         <option value="Other">Other</option>
       </select>
     </div>
-    <button type="submit" name="add_authors" class="btn btn-primary">Add Author</button>
-  </form>
+        <input type="hidden" name="id" value="<?php echo $data['author_id']; ?>"> 
+    <button type="submit" name="add_authors" class="btn btn-primary">Update Author</button>
+ <?php echo $sweetAlertConfig; ?>
+</form>
+
 </div>
 <script src="./bootstrap-5.3.3-dist/js/bootstrap.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script> <!-- Add Popper.js -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script> <!-- Correct Bootstrap JS -->
-<script src="./package/dist/sweetalert2.min.js"></script>
-<?php echo $sweetAlertConfig; ?>
+
 </body>
 </html>

@@ -63,24 +63,26 @@ class database {
     }
 
 
-         function insertAuthor($firstname, $lastname, $birthday, $nationality) {
+        function addAuthor($authorFN, $authorLN, $authorBD, $authorNat){
+        
         $con = $this->opencon();
-        try {
+        
+        try{
             $con->beginTransaction();
-    
-            // Insert into Address table
-            $stmt = $con->prepare("INSERT INTO authors (author_FN, author_LN, author_birthday, author_nat) VALUES (?, ?, ?, ?)") ;
-            $stmt->execute([$firstname, $lastname, $birthday, $nationality]);
-    
-            // Get the newly inserted address_id
-            $author_id = $con->lastInsertId();
 
+            $stmt = $con->prepare("INSERT INTO authors (author_FN, author_LN, author_birthday, author_nat) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$authorFN, $authorLN, $authorBD, $authorNat]);
+
+            $authorID = $con->lastInsertId();
             $con->commit();
-            return $author_id;
-        } catch (PDOException $e) {
+
+            return $authorID;
+
+        }catch (PDOException $e){
             $con->rollBack();
             return false;
         }
+
     }
 
         function insertGenre($genrename) {
@@ -110,7 +112,7 @@ class database {
         ->fetchAll();
     }
 
-    function viewAuthorsID($id)
+    function viewAuthorID($id)
     {
         $con = $this->opencon();
         $stmt = $con->prepare("Select * FROM Authors WHERE author_id = ?");
@@ -118,6 +120,21 @@ class database {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+      function insertAuthor($firstname, $lastname, $birthday, $nationalty, $authorid){
+    try    {
+        $con = $this->opencon();
+        $con->beginTransaction();
+        $query = $con->prepare("UPDATE Authors SET author_FN = ?, author_LN = ?, author_birthday = ?, author_nat = ? WHERE author_id = ? ");
+        $query->execute([$firstname, $lastname, $birthday, $nationalty, $authorid]);
+        $con->commit();
+        return true;
+
+    } catch (PDOException $e) {
+       
+         $con->rollBack();
+        return false; 
+    }
+    }
 
     }
 ?>
