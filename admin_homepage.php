@@ -1,3 +1,17 @@
+<?php
+session_start();
+require_once('classes/database.php');
+$con = new database();
+
+// Redirect if not logged in
+if (!isset($_SESSION['user_id'])){
+  header("Location: index.php");
+  exit();
+}
+
+?>
+
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -118,36 +132,41 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Mark</td>
-                <td>Twain</td>
-                <td>1835</td>
-                <td>American</td>
-                <td>
-                  <button type="submit" class="btn btn-warning btn-sm">
-                    <i class="bi bi-pencil-square"></i>
-                  </button>
-                  <button type="submit" name="delete" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this author?')">
-                    <i class="bi bi-x-square"></i>
-                  </button>
+            <?php
+            $data = $con->viewAuthors();
+            foreach ($data as $rows){
+            ?>
+
+            <td><?php echo $rows['author_id']?></td>
+            <td><?php echo $rows['author_FN']?></td>
+            <td><?php echo $rows['author_LN']?></td>
+            <td><?php echo $rows['author_birthday']?></td>
+            <td><?php echo $rows['author_nat']?></td>
+          
+              <td>
+                  <div class="btn-group" role="group">
+                    <form action="update_authors.php" method="post">
+                    
+                    <input type="hidden" name="id" value="<?php echo $rows['author_id']; ?>">  
+                    <button type="submit" class="btn btn-warning btn-sm">
+                      <i class="fas fa-edit"></i>
+                    </button>
+  
+                    </form>
+                    
+                    <form method="POST" class="mx-1">
+                      <input type="hidden" name="id" value="<?php echo $rows['author_id']; ?>">
+                      <button type="submit" name="delete" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?')">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </form>
+        </div>
+ 
                 </td>
               </tr>
-              <tr>
-                <td>2</td>
-                <td>Jane</td>
-                <td>Austen</td>
-                <td>1775</td>
-                <td>British</td>
-                <td>
-                  <button type="submit" class="btn btn-warning btn-sm">
-                    <i class="bi bi-pencil-square"></i>
-                  </button>
-                  <button type="submit" name="delete" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this author?')">
-                    <i class="bi bi-x-square"></i>
-                  </button>
-                </td>
-              </tr>
+              <?php
+            }
+              ?>
             </tbody>
           </table>
         </div>

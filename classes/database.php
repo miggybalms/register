@@ -103,7 +103,20 @@ class database {
         }
     }
 
+    function viewAuthors()
+    {
+        $con = $this->opencon();
+        return $con->query("Select * FROM Authors")
+        ->fetchAll();
+    }
 
+    function viewAuthorsID($id)
+    {
+        $con = $this->opencon();
+        $stmt = $con->prepare("Select * FROM Authors WHERE author_id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
 
     }
