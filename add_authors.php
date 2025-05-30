@@ -1,47 +1,40 @@
 <?php
- 
-session_start();
- 
+
 require_once('classes/database.php');
 $con = new database();
- 
-$sweetAlertConfig = ""; //Initialize SweetAlert script variable
- 
-if (isset($_POST['add'])) {
- 
-  $authorFN = $_POST['author_FN'];
-  $authorLN = $_POST['author_LN'];
-  $authorBD = $_POST['author_birthdate'];
-  $authorNat = $_POST['author_nat'];
-  $authorID = $con->addAuthor($authorFN, $authorLN, $authorBD, $authorNat);
- 
- 
-  if ($authorID) {
- 
-    $sweetAlertConfig = "
-    <script>
-   
-    Swal.fire({
-        icon: 'success',
-        title: 'Author added successfully!',
-        text: 'The author has been successfully added to the system.',
-        confirmationButtontext: 'OK'
-     }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = 'login.php'
-        }
+
+$data = $con->opencon();
+$sweetAlertConfig = "";
+
+if(isset($_POST['add_authors'])) {
+    $firstname = $_POST['author_FN'];
+    $lastname = $_POST['author_LN'];
+    $birthday = $_POST['author_birthday'];
+    $nationality = $_POST['author_nat'];
+
+    $author_id = $con->insertAuthor($firstname, $lastname, $birthday, $nationality);
+    
+    if ($author_id) {
+        $sweetAlertConfig = "
+          <script>
+            Swal.fire({
+              icon: 'success',
+              title: 'Added Successful',
+              text: 'Author has been addded successfully!',
+              confirmButtonText: 'OK'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.href = 'admin_homepage.php';
+              }
             });
- 
-    </script>";
- 
+          </script>"; 
+      } else {
+        $_SESSION ['error'] = "Error occurred while inserting address. Please try again.";
+      }
   } else {
- 
-    $_SESSION['error'] = "Sorry, there was an error signing up.";
-   
+      $_SESSION ['error'] = "Sorry, there was an error signing up.";
   }
- 
-}
- 
+
 ?>
 
 <!doctype html>
@@ -60,7 +53,7 @@ if (isset($_POST['add'])) {
       <a class="navbar-brand" href="#">Library Management System (Admin)</a>
       <a class="btn btn-outline-light ms-auto active" href="add_authors.php">Add Authors</a>
       <a class="btn btn-outline-light ms-2" href="add_genres.php">Add Genres</a> 
-      <a class="btn btn-outline-light ms-2" href="add_books.html">Add Books</a>
+      <a class="btn btn-outline-light ms-2" href="add_books.php">Add Books</a>
       <a class="btn btn-outline-light ms-2" href="logout.php">Logout</a>
       <div class="dropdown ms-2">
         <button class="btn btn-outline-light dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">

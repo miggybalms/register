@@ -1,4 +1,5 @@
 <?php
+
 class database {
     function opencon(): PDO {
         return new PDO(
@@ -7,20 +8,22 @@ class database {
             ''
         );
     }
- 
-    function signupUser($firstname, $lastname, $birthday, $email, $sex, $phone, $username, $password, $profile_picture_path){
+
+    function signupUser($user_FN, $user_LN, $user_birthday, $user_email, $user_sex, $user_phone, $user_username, $user_password, $profile_picture_path) {
         $con = $this->opencon();
         try {
             $con->beginTransaction();
-           
-            $stmt = $con->prepare("INSERT INTO Users (user_Fn, user_Ln, user_birthday, user_sex, user_email, user_phone, user_username, user_password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$firstname, $lastname, $birthday, $sex, $email, $phone, $username, $password]);
- 
+
+            $hashedPassword = password_hash($user_password, PASSWORD_DEFAULT);
+
+            $stmt = $con->prepare("INSERT INTO Users (user_FN, user_LN, user_birthday, user_sex, user_email, user_phone, user_username, user_password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$user_FN, $user_LN, $user_birthday, $user_sex, $user_email, $user_phone, $user_username, $hashedPassword]);
+
             $userId = $con->lastInsertId();
- 
+
             $stmt = $con->prepare("INSERT INTO users_pictures (user_id, user_pic_url) VALUES (?, ?)");
             $stmt->execute([$userId, $profile_picture_path]);
- 
+
             $con->commit();
             return $userId;
         } catch (PDOException $e) {
@@ -28,20 +31,20 @@ class database {
             return false;
         }
     }
- 
-    function insertAddress($userID, $street, $barangay, $city, $province){
+
+    function insertAddress($userID, $street, $barangay, $city, $province) {
         $con = $this->opencon();
         try {
             $con->beginTransaction();
- 
+
             $stmt = $con->prepare("INSERT INTO Address (ba_street, ba_barangay, ba_city, ba_province) VALUES (?, ?, ?, ?)");
             $stmt->execute([$street, $barangay, $city, $province]);
- 
+
             $addressId = $con->lastInsertId();
- 
+
             $stmt = $con->prepare("INSERT INTO Users_Address (user_id, address_id) VALUES (?, ?)");
             $stmt->execute([$userID, $addressId]);
- 
+
             $con->commit();
             return true;
         } catch (PDOException $e) {
@@ -49,52 +52,48 @@ class database {
             return false;
         }
     }
-        function loginUser($username, $password) {
- 
+
+    function loginUser($user_username, $user_password) {
         $con = $this->opencon();
-        $stmt = $con->prepare("SELECT * FROM users WHERE user_username = ?");
-        $stmt->execute([$username]);
+        $stmt = $con->prepare("SELECT * FROM Users WHERE user_username = ?");
+        $stmt->execute([$user_username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        if($user && password_verify($password, $user['user_password'])){
+
+        if ($user && password_verify($user_password, $user['user_password'])) {
             return $user;
         } else {
             return false;
         }
     }
 
-
-        function addAuthor($authorFN, $authorLN, $authorBD, $authorNat){
-        
-        $con = $this->opencon();
-        
-        try{
-            $con->beginTransaction();
-
-            $stmt = $con->prepare("INSERT INTO authors (author_FN, author_LN, author_birthday, author_nat) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$authorFN, $authorLN, $authorBD, $authorNat]);
-
-            $authorID = $con->lastInsertId();
-            $con->commit();
-
-            return $authorID;
-
-        }catch (PDOException $e){
-            $con->rollBack();
-            return false;
-        }
-
-    }
-
-        function insertGenre($genrename) {
+    
+     function insertAuthor($firstname, $lastname, $birthday, $nationality) {
         $con = $this->opencon();
         try {
             $con->beginTransaction();
     
-            // Insert into Address table
+            
+            $stmt = $con->prepare("INSERT INTO authors (author_FN, author_LN, author_birthday, author_nat) VALUES (?, ?, ?, ?)") ;
+            $stmt->execute([$firstname, $lastname, $birthday, $nationality]);
+    
+           
+            $author_id = $con->lastInsertId();
+
+            $con->commit();
+            return $author_id;
+        } catch (PDOException $e) {
+            $con->rollBack();
+            return false;
+        }
+    }
+    function insertGenre($genrename) {
+        $con = $this->opencon();
+        try {
+            $con->beginTransaction();
+    
             $stmt = $con->prepare("INSERT INTO genres (genre_name) VALUES (?)") ;
             $stmt->execute([$genrename]);
     
-            // Get the newly inserted address_id
             $genre_id = $con->lastInsertId();
 
             $con->commit();
@@ -104,37 +103,90 @@ class database {
             return false;
         }
     }
+    
+    function viewAuthors() {
+            $con = $this->opencon();
+            return $con->query("SELECT * FROM authors")->fetchAll();
+        }
 
-    function viewAuthors()
-    {
+
+    function viewAuthorsID($id) {
+            $con = $this->opencon();
+            $stmt = $con->prepare("SELECT * FROM Authors WHERE author_id = ?");
+            $stmt->execute([$id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+
+    function updateAuthor($author_id, $authorFirstName, $authorLastName, $authorBirthYear, $authorNationality) {
+            $con = $this->opencon();
+
+            try {
+                $con->beginTransaction();
+
+                $stmt = $con->prepare("UPDATE Authors SET author_FN = ?, author_LN = ?, author_birthday = ?, author_nat = ? WHERE author_id = ?");
+                $stmt->execute([$authorFirstName, $authorLastName, $authorBirthYear, $authorNationality, $author_id]);
+
+                $con->commit();
+                return true;
+            } catch (PDOException $e) {
+                $con->rollBack();
+                return false;
+            }
+        }
+     function viewGenres() {
         $con = $this->opencon();
-        return $con->query("Select * FROM Authors")
+        return $con->query(query: "SELECT *  FROM genres")
         ->fetchAll();
     }
+        
 
-    function viewAuthorID($id)
-    {
-        $con = $this->opencon();
-        $stmt = $con->prepare("Select * FROM Authors WHERE author_id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+    function updateGenre($id, $genreName) {
+            $con = $this->opencon();
+            try {
+                $con->beginTransaction();
+                $stmt = $con->prepare("UPDATE Genres SET genre_name = ? WHERE genre_id = ?");
+                $stmt->execute([$genreName, $id]);
+                $con->commit();
+                return true;
+            } catch (PDOException $e) {
+                $con->rollBack();
+                return false;
+            }
+        }
 
-      function insertAuthor($firstname, $lastname, $birthday, $nationalty, $authorid){
-    try    {
-        $con = $this->opencon();
-        $con->beginTransaction();
-        $query = $con->prepare("UPDATE Authors SET author_FN = ?, author_LN = ?, author_birthday = ?, author_nat = ? WHERE author_id = ? ");
-        $query->execute([$firstname, $lastname, $birthday, $nationalty, $authorid]);
-        $con->commit();
-        return true;
+        function addBook($title, $isbn, $pubyear, $quantity, $genre_ids = [], $author_ids = []) {
+            $con = $this->opencon();
+            try{
+                $con->beginTransaction();
 
-    } catch (PDOException $e) {
-       
-         $con->rollBack();
-        return false; 
-    }
-    }
+                $stmt = $con->prepare("INSERT INTO books (book_title, book_isbn, book_pubyear, quantity_avail) VALUES (?,?,?,?)");
+                $stmt->execute(params: [$title, $isbn, $pubyear, $quantity]);
+                $book_id = $con->lastInsertId();
 
-    }
+
+                foreach ($genre_ids as $genre_id) {
+                    $stmt = $con->prepare("INSERT INTO genre_Books (genre_id, book_id) VALUES (?,?)");
+                    $stmt->execute(params: [$genre_id, $book_id]);
+
+                }
+                 foreach ($author_ids as $author_id) {
+                    $stmt = $con->prepare("INSERT INTO book_authors (book_id, author_id) VALUES (?,?)");
+                    $stmt->execute(params: [$book_id, $author_id]);
+
+                }
+
+                for ($i = 0; $i < $quantity; $i++) {
+                    $stmt = $con->prepare("INSERT INTO book_copy (book_id, is_available) VALUES (?,1)");
+                    $stmt->execute([$book_id]);
+                }
+
+                $con->commit();
+                return $book_id;
+            } catch (PDOException $e) {
+                $con->rollBack();
+                return false;
+            }
+        }
+}
 ?>

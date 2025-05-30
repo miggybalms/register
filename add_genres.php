@@ -21,7 +21,7 @@ if(isset($_POST['add_genre'])) {
               confirmButtonText: 'OK'
             }).then((result) => {
               if (result.isConfirmed) {
-                window.location.href = 'add_genres.php';
+                window.location.href = 'admin_homepage.php';
               }
             });
           </script>"; 
@@ -51,7 +51,7 @@ if(isset($_POST['add_genre'])) {
       <a class="navbar-brand" href="#">Library Management System (Admin)</a>
       <a class="btn btn-outline-light ms-auto" href="add_authors.php">Add Authors</a>
       <a class="btn btn-outline-light ms-2 active" href="add_genres.php">Add Genres</a>
-      <a class="btn btn-outline-light ms-2" href="add_books.html">Add Books</a>
+      <a class="btn btn-outline-light ms-2" href="add_books.php">Add Books</a>
       <div class="dropdown ms-2">
         <button class="btn btn-outline-light dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-person-circle"></i> <!-- Bootstrap icon -->
@@ -92,6 +92,8 @@ if(isset($_POST['add_genre'])) {
     <button type="submit" name="add_genre" class="btn btn-primary">Add Genre</button>
   </form>
 </div>
+<script src="./package/dist/sweetalert2.js"></script>
+       <?php echo $sweetAlertConfig; ?>
 <script src="./bootstrap-5.3.3-dist/js/bootstrap.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script> <!-- Add Popper.js -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script> <!-- Correct Bootstrap JS -->
